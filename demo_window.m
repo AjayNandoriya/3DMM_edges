@@ -4,7 +4,7 @@ clear all
 addpath('ZhuRamananDetector','optimisations','utils','comparison');
 
 % YOU MUST set this to the base directory of the Basel Face Model
-BFMbasedir = '';
+BFMbasedir = '\\QCRI-PRECISION-\Documents\ajay\CNN\Face\SOA\3dmm_cnn\3DMM_model\';
 
 % Load morphable model
 load(strcat(BFMbasedir,'01_MorphableModel.mat'));
@@ -41,22 +41,19 @@ options.w1 = 0.45;
 options.w2 = 0.15;
 
 %% Setup basic parameters
-
-testdir='testImages/';
-im = imread(strcat(testdir,'image_0018.png'));
+testdir='\\QCRI-PRECISION-/Documents/ajay/CNN/Face/dataset/mean_img_rotate/';
+for img_id = 149:-1:100
+    if(~exist(fullfile(testdir,sprintf('mean_%03d_1_15.png',img_id))))
+        continue;
+    end
+im = imread(fullfile(testdir,sprintf('mean_%03d_1_15.png',img_id)));
 edgeim = edge(rgb2gray(im),'canny',0.15);
-
-scale=1;
-testdir='C:\Users\qcri\Documents\Ajay\Face\SOA\pami09\';
-testfname = strcat(testdir,'ss3.PNG');
-im = imread(testfname);
-im_size = size(im(:,:,1));
-im = imresize(im,scale);
-edgeim = edge(rgb2gray(im),'canny',0.15);
-
 
 ZRtimestart = tic;
 bs = LandmarkDetector(im);
+if(isempty(bs))
+    continue;
+end
 ZRtime = toc(ZRtimestart);
 disp(['Time for landmark detection: ' num2str(ZRtime) ' seconds']);
 [x_landmarks,landmarks]=ZR2BFM( bs,im );
@@ -117,23 +114,10 @@ end
 % Run optimisation for a final time but without limit on number of
 % iterations
 [ R,t,s,b ] = optimiseHardEdgeCost( b,x_landmarks,shapeEV,shapeMU,shapePC,R,t,s,r,c,landmarks,options,tl,true );
-
+save(fullfile('\\QCRI-PRECISION-/Documents/ajay/CNN/Face/SOA/3DMM_edges/mean_img_rotate',sprintf('mean_%03d_15.mat',img_id)),'R','t','s','b');
+end
 disp('Rendering final results...');
 FV.vertices=reshape(shapePC(:,1:ndims)*b+shapeMU,3,size(shapePC,1)/3)';
 figure; subplot(1,3,1); patch(FV, 'FaceColor', [1 1 1], 'EdgeColor', 'none', 'FaceLighting', 'phong'); light; axis equal; axis off;
 subplot(1,3,2); imshow(renderFace(FV,im,R,t,s,false));
 subplot(1,3,3); imshow(renderFace(FV,im,R,t,s,true));
-
-%% save data 3dmodel
-save([testfname(1:end-3) 'mat'],'R','t','s','b');
-% %% save data for sig17 MTP
-% [normals,mask,depthMap]=render_face_normals(FV,im,R,t,s);
-% depthMap(:,:,1)=(depthMap(:,:,1)./max(max(depthMap(:,:,1))));
-% depthMap(:,:,2)=(depthMap(:,:,2)./max(max(depthMap(:,:,2))));
-% depthMap(:,:,3)=(depthMap(:,:,3)/scale/scale);
-% depthMap = imresize(depthMap,im_size);
-% imwrite(depthMap,'C:\Users\qcri\Documents\Ajay\Face\SOA\sig_2017_mtp\img\depth_010.png');
-% nornmals = imresize(normals,im_size);
-% imwrite((normals+1)/2,'C:\Users\qcri\Documents\Ajay\Face\SOA\sig_2017_mtp\img\normals_010.png');
-% mask = imresize(mask,im_size);
-% imwrite(mask(:,:,1),'C:\Users\qcri\Documents\Ajay\Face\SOA\sig_2017_mtp\img\masks_010.png');
