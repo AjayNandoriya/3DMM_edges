@@ -24,15 +24,17 @@ Rr(4,4)=1;
 Sr = eye(4).*s;
 Tr = eye(4);
 Tr(1:2,4)=t;
-T = Tr*Sr*Rr;
+T = Tr*Sr*Rr
 clear Tr Sr Rr
 
 if(istexture)
-FV.facevertexcdata = faceTexture(FV,R,t,s,im);
-oglp.i_dir_light = [0 0 0];
-renderim = render_face_back(FV, T, oglp, zeros(size(im)));
+    if(~isfield(FV,'facevertexcdata'))
+        FV.facevertexcdata = faceTexture(FV,R,t,s,im);
+    end
+    oglp.i_dir_light = [0 0 0];
+    renderim = render_face_back(FV, T, oglp, zeros(size(im)));
 else
-renderim = render_face_FV(FV, T, oglp, im);
+    renderim = render_face_FV(FV, T, oglp, im);
 end
 
 end

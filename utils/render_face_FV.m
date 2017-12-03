@@ -203,6 +203,9 @@ diffuse3 = i_dir_light(3) *  NdotL;
 texture1 =  diffuse1;
 texture2 =  diffuse2;
 texture3 =  diffuse3;
+texture1 =  normals(:,1);
+texture2 =  normals(:,2);
+texture3 =  normals(:,3);
 
 
 % Render the texture
