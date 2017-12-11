@@ -23,6 +23,8 @@ To recreate the quantitative experiment in our paper, run the evaluation.m scrip
 
 In order to use this code, you need to provide your own 3D Morphable Model. One such model (and the one we used while developing the code) is the [Basel Face Model](http://faces.cs.unibas.ch/bfm/?nav=1-0&id=basel_face_model). This model is freely available upon signing a license agreement. If you use the Basel Face Model, then all you need to do is set the base path to your model in the demo.m file:
 
+Download 01_MorphableModel.mat using https://drive.google.com/open?id=1uZwxn9jP8-GwBcwpjn6nGRrk60D90_da 
+
 ```matlab
 BFMbasedir = '...'; % Set this to your Basel Face Model base directory
 ```
